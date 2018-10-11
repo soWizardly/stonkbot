@@ -4,17 +4,17 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Slack\Message\{Attachment, AttachmentBuilder, AttachmentField};
 
+$config = include __DIR__ . '/config.php';
+$loop   = \React\EventLoop\Factory::create();
 $httpClient = new GuzzleHttp\Client([
     'curl' => [ CURLOPT_SSL_VERIFYPEER => false ],
     'verify' => false
 ]);
-
-$loop   = \React\EventLoop\Factory::create();
 $client = new \Slack\RealTimeClient($loop, new GuzzleHttp\Client([
     'curl' => [ CURLOPT_SSL_VERIFYPEER => false ],
     'verify' => false
 ]));
-$client->setToken('xoxb-312718511745-419791035296-CPQzFAHQUJjkidwPAaCfVODT');
+$client->setToken($config["slack_token"]);
 $client->connect();
 
 $client->on('message', function ($data) use ($client, $httpClient) {
