@@ -1,4 +1,5 @@
 <?php
 return [
-    "slack_token" => ""
+    "slack_token" => "",
+    "news_api"    => ""
 ];
