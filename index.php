@@ -49,6 +49,48 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             $promise->wait();
         }
 
+        if ($action[0] == ".stonknews") {
+
+            try {
+
+                $stonk = $action[1];
+                if (empty($stonk)) {
+                    throw new \Exception("you need to enter a stonk");
+                }
+
+                $from    = date("Y-m-d", strtotime("yesterday"));
+                /**
+                 * Required attribution to newsapi.org
+                 */
+                $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/everything?q={$stonk}&from={$from}&apiKey={$config["news_api"]}");
+                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $channel) {
+                    $res = json_decode($response->getBody(), true);
+                    $message = $client->getMessageBuilder();
+                    $sources = [];
+                    foreach ($res["articles"] as $article) {
+                        if (in_array($article["source"]["id"], $sources) || count($sources) > 3) {
+                            continue;
+                        }
+                        $sources[] = $article["source"]["id"];
+                        $message = $message->addAttachment(new Attachment(
+                            $article["title"],
+                            $article["description"] . " " . $article["url"]
+                        ));
+                    }
+                    $client->postMessage($message->setText('')->setChannel($channel)->create());
+                });
+                $promise->wait();
+            } catch (\Exception $e) {
+
+                $message = $client->getMessageBuilder()
+                    ->setText("I died: ".$e->getMessage())
+                    ->setChannel($channel)
+                    ->create();
+                $client->postMessage($message);
+
+            }
+        }
+
         if ($action[0] == ".ath") {
 
             try {
