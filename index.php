@@ -59,6 +59,9 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                 }
 
                 $from    = date("Y-m-d", strtotime("yesterday"));
+                /**
+                 * Required attribution to newsapi.org
+                 */
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/everything?q={$stonk}&from={$from}&apiKey={$config["news_api"]}");
                 $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $channel) {
                     $res = json_decode($response->getBody(), true);
