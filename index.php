@@ -71,7 +71,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                         $sources[] = $article["source"]["id"];
                         $message = $message->addAttachment(new Attachment(
                             $article["title"],
-                            $article["description"] . $article["url"]
+                            $article["description"] . " " . $article["url"]
                         ));
                     }
                     $client->postMessage($message->setText('')->setChannel($channel)->create());
