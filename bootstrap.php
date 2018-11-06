@@ -20,7 +20,7 @@ BagOfDooDoo::register('config', $config);
 BagOfDooDoo::register(\GuzzleHttp\Client::class, $httpClient);
 BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
 
-// Creates an empty SQLite file
+// Creates an empty SQLite file, if it doesn't exist..
 $sqlite = new SQLite3(__DIR__ . '/storage/db.sqlite');
 $ormConfig = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/src'), true);
 $conn = array(
