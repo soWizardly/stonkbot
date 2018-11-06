@@ -3,5 +3,10 @@
   "prefer-stable": true,
   "require": {
     "coderstephen/slack-client": "^0.3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bot\\": "app/"
+    }
   }
 }
