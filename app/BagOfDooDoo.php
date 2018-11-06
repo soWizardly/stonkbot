@@ -10,25 +10,26 @@ class BagOfDooDoo
 
     public static function make(string $class)
     {
-        if ($concrete = isset(self::$classes[$class])) {
+        if (isset(static::$classes[$class])) {
+            $concrete = static::$classes[$class];
             if ($concrete instanceof \Closure) {
                 // assuming it doesn't have any dependencies /shrug
-                // reflection and all that is for nerds
                 return $concrete();
             }
 
             return $concrete;
         }
+        return null;
     }
 
     /**
-     * Register a shitty class bruh
+     * Register a class to the container.
      * @param string $class
      * @param $concrete |Closure|Class
      */
     public static function register(string $class, $concrete)
     {
-        self::$classes[$class] = $concrete;
+        static::$classes[$class] = $concrete;
     }
 
 }
