@@ -1,8 +1,6 @@
 <?php
 require 'bootstrap.php';
 
-use Bot\BagOfDooDoo;
-use Bot\Commands\Command;
 
 $commandClasses = include 'config/commands.php';
 $commands = array();
