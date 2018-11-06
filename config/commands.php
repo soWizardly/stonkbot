@@ -8,5 +8,5 @@ return [
     Commands\UserStonksCommand::class,
     Commands\AllTimeHighCommand::class,
     Commands\WhatIfCommand::class,
-    \Commands\PointsCommand::class,
+    \Commands\KarmaCommand::class,
 ];
