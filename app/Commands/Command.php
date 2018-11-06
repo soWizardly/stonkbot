@@ -2,6 +2,8 @@
 
 namespace Bot\Commands;
 
+use Slack\ChannelInterface;
+
 abstract class Command
 {
 
@@ -18,18 +20,18 @@ abstract class Command
     }
 
     /**
-     * The name of the command
-     * @return string
+     * The name of the command, or an array of aliases
+     * @return string|array
      */
-    public abstract function command(): string;
+    public abstract function command();
 
 
     /**
      * Run the command on the specified channel.
-     * @param string|int $channel Channel ID or Name
+     * @param ChannelInterface $channel
      * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
-    public abstract function run($channel, $message);
+    public abstract function run(ChannelInterface $channel, $message);
 
 }
