@@ -2,11 +2,13 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "coderstephen/slack-client": "^0.3.0"
+    "coderstephen/slack-client": "^0.3.0",
+    "symfony/yaml": "^4.1",
+    "doctrine/orm": "^2.6"
   },
   "autoload": {
-    "psr-4": {
-      "Bot\\": "app/"
+    "psr-0": {
+      "": "src/"
     }
   }
 }

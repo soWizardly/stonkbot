@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bot\Commands;
+namespace Commands;
 
 
-use Bot\BagOfDooDoo;
+use BagOfDooDoo;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -17,7 +17,7 @@ class FakeNewsCommand extends Command
      * The name of the command
      * @return string
      */
-    public function command(): string
+    public function command()
     {
         return 'fakenews';
     }
