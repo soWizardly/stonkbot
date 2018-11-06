@@ -1,6 +1,6 @@
 <?php
 
-namespace Bot\Commands;
+namespace Commands;
 
 use Slack\ChannelInterface;
 

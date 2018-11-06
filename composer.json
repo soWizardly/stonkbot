@@ -7,8 +7,8 @@
     "doctrine/orm": "^2.6"
   },
   "autoload": {
-    "psr-4": {
-      "Bot\\": "src/"
+    "psr-0": {
+      "": "src/"
     }
   }
 }

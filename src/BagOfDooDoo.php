@@ -1,7 +1,6 @@
 <?php
 
 
-namespace Bot;
 
 
 class BagOfDooDoo

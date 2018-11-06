@@ -16,7 +16,14 @@ $client = new \Slack\RealTimeClient($loop, new GuzzleHttp\Client([
 $client->setToken($config["slack_token"]);
 $client->connect();
 
-\Bot\BagOfDooDoo::register('config', $config);
-\Bot\BagOfDooDoo::register(\GuzzleHttp\Client::class, $httpClient);
-\Bot\BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
+BagOfDooDoo::register('config', $config);
+BagOfDooDoo::register(\GuzzleHttp\Client::class, $httpClient);
+BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
 
+$ormConfig = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/src'), true);
+$conn = array(
+    'driver' => 'pdo_sqlite',
+    'path' => __DIR__ . '/storage/db.sqlite'
+);
+
+$entityManager = \Doctrine\ORM\EntityManager::create($conn, $ormConfig);
