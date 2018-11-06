@@ -23,9 +23,10 @@ class FakeNewsCommand extends Command
     /**
      * Run the command
      * @param $channel
+     * @param $message
      * @return mixed
      */
-    public function run($channel)
+    public function run($channel, $message)
     {
         $httpClient = BagOfDooDoo::make(Client::class);
         $config = BagOfDooDoo::make('config');
