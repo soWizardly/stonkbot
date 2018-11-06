@@ -17,7 +17,7 @@ class FakeNewsCommand extends Command
      * The name of the command
      * @return string
      */
-    public function command(): string
+    public function command()
     {
         return 'fakenews';
     }
