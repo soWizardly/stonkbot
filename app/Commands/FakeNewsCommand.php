@@ -19,7 +19,7 @@ class FakeNewsCommand extends Command
      */
     public function command(): string
     {
-        return 'test';
+        return 'fakenews';
     }
 
     /**
