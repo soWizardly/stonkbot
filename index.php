@@ -4,7 +4,7 @@ require 'bootstrap.php';
 use Bot\BagOfDooDoo;
 use Bot\Commands\Command;
 
-$commandClasses = include 'commands.php';
+$commandClasses = include 'config/commands.php';
 $commands = array();
 foreach ($commandClasses as $command) {
     $commands[] = new $command(BagOfDooDoo::make(\Slack\RealTimeClient::class));

@@ -3,7 +3,7 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Slack\Message\{Attachment, AttachmentBuilder, AttachmentField};
 
-$config = include __DIR__ . '/config.php';
+$config = include __DIR__ . '/config/config.php';
 $loop = \React\EventLoop\Factory::create();
 $httpClient = new GuzzleHttp\Client([
     'curl' => [CURLOPT_SSL_VERIFYPEER => false],
