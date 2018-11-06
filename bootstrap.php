@@ -22,7 +22,7 @@ BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
 
 // Creates an empty SQLite file
 $sqlite = new SQLite3(__DIR__ . '/storage/db.sqlite');
-$ormConfig = \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/config/yaml'), true);
+$ormConfig = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/src'), true);
 $conn = array(
     'driver' => 'pdo_sqlite',
     'path' => __DIR__ . '/storage/db.sqlite'
