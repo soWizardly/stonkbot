@@ -18,7 +18,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config, $com
         foreach ($commands as $command) {
             /* @var \Bot\Commands\Command $command */
             if ($action[0] == $token . $command->command()) {
-                $command->run($channel);
+                $command->run($channel, $action);
             }
         }
 
@@ -29,9 +29,6 @@ $client->on('message', function ($data) use ($client, $httpClient, $config, $com
                 ->setChannel($channel)
                 ->create();
             $client->postMessage($message);
-        }
-
-        if ($action[0] == ".fakenews") {
         }
 
         if ($action[0] == ".stonknews") {

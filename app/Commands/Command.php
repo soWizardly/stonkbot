@@ -26,9 +26,10 @@ abstract class Command
 
     /**
      * Run the command on the specified channel.
-     * @param string|int $channel
+     * @param string|int $channel Channel ID or Name
+     * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
-    public abstract function run($channel);
+    public abstract function run($channel, $message);
 
 }
