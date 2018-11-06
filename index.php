@@ -256,7 +256,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             try {
 
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=ARLP,DBC,SACH&types=quote");
-                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel, $isLong) {
+                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
                     $message   = [];
@@ -322,7 +322,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             try {
 
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=AKER,DARE,LTBR,NBEV,TWTR,TEAM,TWLO,VZ,VG,MSFT,CBT&types=quote");
-                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel, $isLong) {
+                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
                     $message   = [];
@@ -388,7 +388,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             try {
 
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=QQQ,BRK.B,ATVI&types=quote");
-                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel, $isLong) {
+                $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
                     $message   = [];
