@@ -30,3 +30,5 @@ $conn = array(
 
 $entityManager = \Doctrine\ORM\EntityManager::create($conn, $ormConfig);
 
+BagOfDooDoo::register(\Doctrine\ORM\EntityManager::class, $entityManager);
+
