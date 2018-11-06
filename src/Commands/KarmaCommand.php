@@ -17,7 +17,7 @@ class PointsCommand extends Command
      */
     public function command()
     {
-        return ['addpoint', 'removepoint'];
+        return ['addpoint', 'removepoint', 'karma', 'scoreboard'];
     }
 
     /**
@@ -25,6 +25,8 @@ class PointsCommand extends Command
      * @param ChannelInterface $channel
      * @param array $message The text the user said, exploded by space.
      * @return mixed
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function run(ChannelInterface $channel, $message)
     {
