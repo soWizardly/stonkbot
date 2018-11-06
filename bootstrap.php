@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 use Slack\Message\{Attachment, AttachmentBuilder, AttachmentField};
 
@@ -20,10 +20,13 @@ BagOfDooDoo::register('config', $config);
 BagOfDooDoo::register(\GuzzleHttp\Client::class, $httpClient);
 BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
 
-$ormConfig = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array(__DIR__ . '/src'), true);
+// Creates an empty SQLite file
+$sqlite = new SQLite3(__DIR__ . '/storage/db.sqlite');
+$ormConfig = \Doctrine\ORM\Tools\Setup::createYAMLMetadataConfiguration(array(__DIR__ . '/config/yaml'), true);
 $conn = array(
     'driver' => 'pdo_sqlite',
     'path' => __DIR__ . '/storage/db.sqlite'
 );
 
 $entityManager = \Doctrine\ORM\EntityManager::create($conn, $ormConfig);
+
