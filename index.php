@@ -1,27 +1,27 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require 'bootstrap.php';
 
-use Slack\Message\{Attachment, AttachmentBuilder, AttachmentField};
 
-$config = include __DIR__ . '/config.php';
-$loop   = \React\EventLoop\Factory::create();
-$httpClient = new GuzzleHttp\Client([
-    'curl' => [ CURLOPT_SSL_VERIFYPEER => false ],
-    'verify' => false
-]);
-$client = new \Slack\RealTimeClient($loop, new GuzzleHttp\Client([
-    'curl' => [ CURLOPT_SSL_VERIFYPEER => false ],
-    'verify' => false
-]));
-$client->setToken($config["slack_token"]);
-$client->connect();
-
-$client->on('message', function ($data) use ($client, $httpClient, $config) {
-    $client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($client, $data, $httpClient,&$last,$config) {
-
+$commandClasses = include 'commands.php';
+$commands = array();
+foreach ($commandClasses as $command) {
+    $commands[] = new $command(\Bot\BagOfDooDoo::make(\Slack\RealTimeClient::class));
+}
+$client->on('message', function ($data) use ($client, $httpClient, $config, $commands) {
+    $client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($client, $data, $httpClient, &$last, $config, $commands) {
         $action = explode(" ", strtolower($data["text"])) ?? null;
         $text = strtolower($data["text"]);
+
+        // just hard code it for now w/e
+        $token = '.';
+        foreach ($commands as $command) {
+            /* @var \Bot\Commands\Command $command */
+            if ($action[0] == $token . $command->command()) {
+                $command->run($channel);
+            }
+        }
+
 
         if ($action[0] == ".stock" || $action[0] == ".stonks") {
             $message = $client->getMessageBuilder()
@@ -32,21 +32,6 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
         }
 
         if ($action[0] == ".fakenews") {
-            $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/top-headlines?country=us&apiKey={$config["news_api"]}");
-            $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $channel) {
-
-                $res         = json_decode($response->getBody(), true);
-                $article     = $res["articles"][array_rand($res["articles"])];
-                $dt = "Donald Trump was quoted as saying he 'loved it'.";
-                $description = !empty($article["description"]) ? rtrim($article["description"],".") . " and {$dt}" : $dt;
-                $message = $client->getMessageBuilder()->addAttachment(new Attachment(
-                    rtrim($article["title"],".") . " in Donald Trump's bed.",
-                    $description . " " .$article["url"]
-                ))->setText('')->setChannel($channel)->create();
-
-                $client->postMessage($message);
-            });
-            $promise->wait();
         }
 
         if ($action[0] == ".stonknews") {
@@ -58,7 +43,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                     throw new \Exception("you need to enter a stonk");
                 }
 
-                $from    = date("Y-m-d", strtotime("yesterday"));
+                $from = date("Y-m-d", strtotime("yesterday"));
                 /**
                  * Required attribution to newsapi.org
                  */
@@ -83,7 +68,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             } catch (\Exception $e) {
 
                 $message = $client->getMessageBuilder()
-                    ->setText("I died: ".$e->getMessage())
+                    ->setText("I died: " . $e->getMessage())
                     ->setChannel($channel)
                     ->create();
                 $client->postMessage($message);
@@ -100,7 +85,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
                     $res = json_decode($response->getBody(), true);
                     $ath = 186.74;
-                    $isAth  = \round($res["quote"]["latestPrice"],2) >= $ath;
+                    $isAth = \round($res["quote"]["latestPrice"], 2) >= $ath;
 
                     $message = $client->getMessageBuilder()
                         ->addAttachment(
@@ -161,7 +146,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                 $count = count($stonks);
 
                 if ($count > 1) {
-                    $stonk  = strtoupper(implode(',',$action));
+                    $stonk = strtoupper(implode(',', $action));
                     $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
                 } elseif ($count == 1) {
                     $stonk = strtoupper($stonks[1]);
@@ -179,15 +164,15 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
                         $res = $res["quote"] ?? $res;
 
-                        $now        = \round($res["latestPrice"],2);
+                        $now = \round($res["latestPrice"], 2);
                         $percentage = $res["changePercent"] * 100;
-                        $symbol     = $res["symbol"];
-                        $message[]  = "{$symbol} \${$now} ({$percentage}%)";
+                        $symbol = $res["symbol"];
+                        $message[] = "{$symbol} \${$now} ({$percentage}%)";
                     }
 
                     $message = $client->getMessageBuilder()
                         ->addAttachment(
-                            new Attachment("Hot Stonk Action", implode(', ',$message), null, $percentage > 0 ? "#00ff00" : "#ff0000")
+                            new Attachment("Hot Stonk Action", implode(', ', $message), null, $percentage > 0 ? "#00ff00" : "#ff0000")
                         )
                         ->setText('')
                         ->setChannel($channel)
@@ -199,7 +184,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             } catch (\Exception $e) {
 
                 $message = $client->getMessageBuilder()
-                    ->setText("I died: ".$e->getMessage())
+                    ->setText("I died: " . $e->getMessage())
                     ->setChannel($channel)
                     ->create();
                 $client->postMessage($message);
@@ -212,8 +197,8 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
             try {
 
-                $stonk   = strtoupper($action[1]);
-                $amount  = (int)$action[2];
+                $stonk = strtoupper($action[1]);
+                $amount = (int)$action[2];
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
                 $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $stonk, $channel, $amount) {
 
@@ -221,9 +206,9 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                     $message = [];
 
                     foreach ($resp as $res) {
-                        $change    = $res["quote"]["ytdChange"] + 1;
-                        $newAmount = round($amount * $change,2);
-                        $message   = "If you invested \${$amount} Jan 1st of this year, you'd have \${$newAmount} now.";
+                        $change = $res["quote"]["ytdChange"] + 1;
+                        $newAmount = round($amount * $change, 2);
+                        $message = "If you invested \${$amount} Jan 1st of this year, you'd have \${$newAmount} now.";
                     }
 
                     $message = $client->getMessageBuilder()
@@ -240,7 +225,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             } catch (\Exception $e) {
 
                 $message = $client->getMessageBuilder()
-                    ->setText("I died: ".$e->getMessage())
+                    ->setText("I died: " . $e->getMessage())
                     ->setChannel($channel)
                     ->create();
                 $client->postMessage($message);
@@ -251,7 +236,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
         if ($action[0] == ".buttahstonks") {
 
-            $isLong = trim($action[1]??'');
+            $isLong = trim($action[1] ?? '');
 
             try {
 
@@ -259,36 +244,34 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                 $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
-                    $message   = [];
+                    $message = [];
                     $peRatio = [];
 
                     foreach ($portfolio as $item => $data) {
 
                         $peRatio[] = $data["quote"]["peRatio"];
-                        $open = \round($data["quote"]["previousClose"],2);
-                        $now  = \round($data["quote"]["latestPrice"],2);
+                        $open = \round($data["quote"]["previousClose"], 2);
+                        $now = \round($data["quote"]["latestPrice"], 2);
                         if ($now > $open) {
-                            $percentage = \round((($now / $open)-1)*100, 2);
+                            $percentage = \round((($now / $open) - 1) * 100, 2);
                             $total["up"][] = $percentage;
-                        }
-                        elseif ($now < $open) {
-                            $percentage = \round((($open / $now)-1)*100, 2);
+                        } elseif ($now < $open) {
+                            $percentage = \round((($open / $now) - 1) * 100, 2);
                             $total["down"][] = $percentage;
                             $percentage = "-" . $percentage;
-                        }
-                        elseif ($open == $now) {
+                        } elseif ($open == $now) {
                             $percentage = 0;
                         }
 
                         $message[] = strtoupper($item) . " ({$percentage}%)";
                     }
 
-                    $move    = round((array_sum($total["up"]??[]) - array_sum($total["down"]??[])) / count($portfolio),2);
+                    $move = round((array_sum($total["up"] ?? []) - array_sum($total["down"] ?? [])) / count($portfolio), 2);
                     $peRatio = array_filter($peRatio);
                     $message =
                         "Total Change " . $move .
-                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio),2)."x" .
-                        (!empty($isLong) ? ("\n" . implode(', ',$message)) : "");
+                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio), 2) . "x" .
+                        (!empty($isLong) ? ("\n" . implode(', ', $message)) : "");
 
 
                     $message = $client->getMessageBuilder()
@@ -317,7 +300,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
         if ($action[0] == ".dingdongstonks") {
 
-            $isLong = trim($action[1]??'');
+            $isLong = trim($action[1] ?? '');
 
             try {
 
@@ -325,36 +308,34 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                 $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
-                    $message   = [];
+                    $message = [];
                     $peRatio = [];
 
                     foreach ($portfolio as $item => $data) {
 
                         $peRatio[] = $data["quote"]["peRatio"];
-                        $open = \round($data["quote"]["previousClose"],2);
-                        $now  = \round($data["quote"]["latestPrice"],2);
+                        $open = \round($data["quote"]["previousClose"], 2);
+                        $now = \round($data["quote"]["latestPrice"], 2);
                         if ($now > $open) {
-                            $percentage = \round((($now / $open)-1)*100, 2);
+                            $percentage = \round((($now / $open) - 1) * 100, 2);
                             $total["up"][] = $percentage;
-                        }
-                        elseif ($now < $open) {
-                            $percentage = \round((($open / $now)-1)*100, 2);
+                        } elseif ($now < $open) {
+                            $percentage = \round((($open / $now) - 1) * 100, 2);
                             $total["down"][] = $percentage;
                             $percentage = "-" . $percentage;
-                        }
-                        elseif ($open == $now) {
+                        } elseif ($open == $now) {
                             $percentage = 0;
                         }
 
                         $message[] = strtoupper($item) . " ({$percentage}%)";
                     }
 
-                    $move    = round((array_sum($total["up"]??[]) - array_sum($total["down"]??[])) / count($portfolio),2);
+                    $move = round((array_sum($total["up"] ?? []) - array_sum($total["down"] ?? [])) / count($portfolio), 2);
                     $peRatio = array_filter($peRatio);
                     $message =
                         "Total Change " . $move .
-                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio),2)."x" .
-                        (!empty($isLong) ? ("\n" . implode(', ',$message)) : "");
+                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio), 2) . "x" .
+                        (!empty($isLong) ? ("\n" . implode(', ', $message)) : "");
 
 
                     $message = $client->getMessageBuilder()
@@ -383,7 +364,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
 
         if ($action[0] == ".beanstonks") {
 
-            $isLong = trim($action[1]??'');
+            $isLong = trim($action[1] ?? '');
 
             try {
 
@@ -391,36 +372,34 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
                 $promise = $httpClient->sendAsync($request)->then(function ($response) use ($client, $isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
-                    $message   = [];
+                    $message = [];
                     $peRatio = [];
 
                     foreach ($portfolio as $item => $data) {
 
                         $peRatio[] = $data["quote"]["peRatio"];
-                        $open = \round($data["quote"]["previousClose"],2);
-                        $now  = \round($data["quote"]["latestPrice"],2);
+                        $open = \round($data["quote"]["previousClose"], 2);
+                        $now = \round($data["quote"]["latestPrice"], 2);
                         if ($now > $open) {
-                            $percentage = \round((($now / $open)-1)*100, 2);
+                            $percentage = \round((($now / $open) - 1) * 100, 2);
                             $total["up"][] = $percentage;
-                        }
-                        elseif ($now < $open) {
-                            $percentage = \round((($open / $now)-1)*100, 2);
+                        } elseif ($now < $open) {
+                            $percentage = \round((($open / $now) - 1) * 100, 2);
                             $total["down"][] = $percentage;
                             $percentage = "-" . $percentage;
-                        }
-                        elseif ($open == $now) {
+                        } elseif ($open == $now) {
                             $percentage = 0;
                         }
 
                         $message[] = strtoupper($item) . " ({$percentage}%)";
                     }
 
-                    $move    = round((array_sum($total["up"]??[]) - array_sum($total["down"]??[])) / count($portfolio),2);
+                    $move = round((array_sum($total["up"] ?? []) - array_sum($total["down"] ?? [])) / count($portfolio), 2);
                     $peRatio = array_filter($peRatio);
                     $message =
                         "Total Change " . $move .
-                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio),2)."x" .
-                        (!empty($isLong) ? ("\n" . implode(', ',$message)) : "");
+                        "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio), 2) . "x" .
+                        (!empty($isLong) ? ("\n" . implode(', ', $message)) : "");
 
 
                     $message = $client->getMessageBuilder()
@@ -446,7 +425,7 @@ $client->on('message', function ($data) use ($client, $httpClient, $config) {
             }
 
         }
-        
+
     });
 });
 
