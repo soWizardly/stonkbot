@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bot\Commands;
+namespace Commands;
 
 
-use Bot\BagOfDooDoo;
+use BagOfDooDoo;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;

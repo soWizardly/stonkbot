@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bot\Commands;
+namespace Commands;
 
 
-use Bot\BagOfDooDoo;
+use BagOfDooDoo;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -17,7 +17,7 @@ class UserStonksCommand extends Command
     public function __construct(\Slack\RealTimeClient $client)
     {
         // gonna do this cuz we ghetto af :)
-        $this->users = include __DIR__ . '/../../user_stonks.php';
+        $this->users = include __DIR__ . '/../../config/user_stonks.php';
         parent::__construct($client);
     }
 
