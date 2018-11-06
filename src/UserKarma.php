@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @Entity @Table(name="user_karma")
+ * @Entity @Table(name="user_karma",uniqueConstraints={@UniqueConstraint(name="name_unique",columns={"name"})})
  **/
 class UserKarma
 {

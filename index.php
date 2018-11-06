@@ -1,19 +1,6 @@
 <?php
 require 'bootstrap.php';
 
-$product = new UserKarma();
-$product->setName('test');
-$product->setPlus(1);
-$product->setMinus(0);
-
-$entityManager->persist($product);
-$entityManager->flush();
-
-echo "Created UserKarma with ID " . $product->getId();
-
-die;
-
-
 $commandClasses = include 'config/commands.php';
 $commands = array();
 foreach ($commandClasses as $command) {
