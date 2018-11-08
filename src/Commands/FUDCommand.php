@@ -31,9 +31,14 @@ class FUDCommand extends Command
         // hard coded because yolo swaggins
         $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'XLM',];
         $line = '';
+        $i = 0;
         foreach ($json as $item) {
             if (in_array($item['symbol'], $coins)) {
-                $line .= $item['symbol'] . ': ' . $item['quotes']['USD']['price'] . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%) | ';
+                $line .= $item['symbol'] . ': ' . round($item['quotes']['USD']['price'], 2) . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%) ';
+                $i++;
+                if ($i != count($coins)) {
+                    $line .= ' | ';
+                }
             }
         }
 
