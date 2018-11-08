@@ -34,7 +34,7 @@ class FUDCommand extends Command
         $i = 0;
         foreach ($json as $item) {
             if (in_array($item['symbol'], $coins)) {
-                $line .= $item['symbol'] . ': ' . round($item['quotes']['USD']['price'], 2) . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%)';
+                $line .= $item['symbol'] . ': ' . round($item['quotes']['USD']['price'], 3) . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%)';
                 $i++;
                 if ($i != count($coins)) {
                     $line .= ' | ';
