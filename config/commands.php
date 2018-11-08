@@ -9,4 +9,5 @@ return [
     Commands\AllTimeHighCommand::class,
     Commands\WhatIfCommand::class,
     \Commands\KarmaCommand::class,
+    \Commands\FUDCommand::class,
 ];
