@@ -14,7 +14,7 @@ class FUDCommand extends Command
      */
     public function command()
     {
-        return 'btc';
+        return ['btc', 'crapto', 'crypto', 'wheremybeans', 'amirich', 'fud', 'moonedyet'];
     }
 
     /**
@@ -28,13 +28,21 @@ class FUDCommand extends Command
         $client = new Client();
         $response = $client->get('https://api.coinmarketcap.com/v2/ticker/');
         $json = json_decode((string)$response->getBody(), true)['data'];
-        // hard coded because yolo swaggins
-        $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'XLM',];
+        // IM A GOOD PROGRAMMER
+        array_shift($message);
+        if (empty($message)) {
+            $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'XLM',];
+        } else {
+            $coins = array_map(function ($row) {
+                return strtoupper($row);
+            }, $message);
+        }
         $line = '';
         $i = 0;
         foreach ($json as $item) {
             if (in_array($item['symbol'], $coins)) {
-                $line .= $item['symbol'] . ': ' . round($item['quotes']['USD']['price'], 3) . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%)';
+                $line .= $item['symbol'] . ': ' . round($item['quotes']['USD']['price'],
+                        3) . ' (' . $item['quotes']['USD']['percent_change_24h'] . '%)';
                 $i++;
                 if ($i != count($coins)) {
                     $line .= ' | ';
