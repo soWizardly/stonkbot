@@ -37,15 +37,20 @@ class StonkCommand extends Command
 
             if ($count > 1) {
                 $stonk = strtoupper(implode(',', $message));
-                $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
+                $request = new \GuzzleHttp\Psr7\Request('GET',
+                    "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
             } elseif ($count == 1) {
                 $stonk = strtoupper($stonks[1]);
-                $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/$stonk/batch?types=quote");
+                $request = new \GuzzleHttp\Psr7\Request('GET',
+                    "https://api.iextrading.com/1.0/stock/$stonk/batch?types=quote");
             } else {
                 throw new \Exception("You need to enter a stock");
             }
 
-            $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use ($stonk, $channel) {
+            $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use (
+                $stonk,
+                $channel
+            ) {
 
                 $resp = json_decode($response->getBody(), true);
                 $message = [];
@@ -62,7 +67,8 @@ class StonkCommand extends Command
 
                 $message = $this->client->getMessageBuilder()
                     ->addAttachment(
-                        new Attachment("Hot Stonk Action", implode(', ', $message), null, $percentage > 0 ? "#00ff00" : "#ff0000")
+                        new Attachment("Hot Stonk Action", implode(', ', $message), null,
+                            $percentage > 0 ? "#00ff00" : "#ff0000")
                     )
                     ->setText('')
                     ->setChannel($channel)
@@ -74,7 +80,7 @@ class StonkCommand extends Command
         } catch (\Exception $e) {
 
             $message = $this->client->getMessageBuilder()
-                ->setText("I died: " . $e->getMessage())
+                ->setText("yOu kIlLeD mE AUGHHGHG OOHHH AHHHH OOF :hypers:: " . $e->getMessage())
                 ->setChannel($channel)
                 ->create();
             $this->client->postMessage($message);
