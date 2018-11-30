@@ -27,7 +27,9 @@ class MillennialCapitalizationCommand extends Command
      */
     public function run(ChannelInterface $channel, $message)
     {
-        $message = str_split($message[1]);
+        array_shift($message);
+        $message = str_split(implode(' ', $message));
+
         for ($i = 0; $i < count($message); $i++) {
             if ($i % 2 == 0) {
                 $message[$i] = strtoupper($message[$i]);
