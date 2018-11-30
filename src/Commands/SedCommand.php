@@ -1,31 +1,23 @@
 <?php
 
+
 namespace Commands;
+
 
 use Slack\ChannelInterface;
 
-abstract class Command
+class SedCommand extends Command
 {
-
-    /**
-     * Slack Client
-     * @var \Slack\RealTimeClient
-     */
-    public $client;
-
-
-    public function __construct(\Slack\RealTimeClient $client)
-    {
-        $this->client = $client;
-    }
 
     /**
      * The name of the command, or an array of aliases
      * Returning null means it has no command, and just listens to the channel.
      * @return string|array|null
      */
-    public abstract function command();
-
+    public function command()
+    {
+        return null;
+    }
 
     /**
      * Run the command on the specified channel.
@@ -33,6 +25,8 @@ abstract class Command
      * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
-    public abstract function run(ChannelInterface $channel, $message);
+    public function run(ChannelInterface $channel, $message)
+    {
 
+    }
 }
