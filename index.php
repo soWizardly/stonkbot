@@ -1,4 +1,7 @@
 <?php
+
+use GuzzleHttp\Client;
+
 require 'bootstrap.php';
 
 $commandClasses = include 'config/commands.php';
