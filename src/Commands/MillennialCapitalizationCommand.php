@@ -31,7 +31,7 @@ class MillennialCapitalizationCommand extends Command
         $message = str_split(implode(' ', $message));
 
         for ($i = 0; $i < count($message); $i++) {
-            if ($i % 2 == 0) {
+            if ($i % 2 >= 1) {
                 $message[$i] = strtoupper($message[$i]);
             }
         }
