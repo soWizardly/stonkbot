@@ -27,13 +27,14 @@ class MillennialCapitalizationCommand extends Command
      */
     public function run(ChannelInterface $channel, $message)
     {
-        foreach ($message as $i => $letter) {
+        $message = str_split($message[1]);
+        for ($i = 0; $i < count($message); $i++) {
             if ($i % 2 == 0) {
-                $message[$i] = strtoupper($letter);
+                $message[$i] = strtoupper($message[$i]);
             }
         }
         $this->client->postMessage($this->client->getMessageBuilder()
-            ->setText($message)
+            ->setText(implode($message))
             ->setChannel($channel)
             ->create());
     }
