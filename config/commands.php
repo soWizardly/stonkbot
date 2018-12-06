@@ -10,5 +10,6 @@ return [
     Commands\WhatIfCommand::class,
     \Commands\KarmaCommand::class,
     \Commands\FUDCommand::class,
-    \Commands\MillennialCapitalizationCommand::class
+    \Commands\MillennialCapitalizationCommand::class,
+    \Commands\UrbanDictionaryCommand::class
 ];
