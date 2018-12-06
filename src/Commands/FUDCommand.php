@@ -31,7 +31,7 @@ class FUDCommand extends Command
         // IM A GOOD PROGRAMMER
         array_shift($message);
         if (empty($message)) {
-            $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'XLM',];
+            $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'BTCSV', 'XLM',];
         } else {
             $coins = array_map(function ($row) {
                 return strtoupper($row);
