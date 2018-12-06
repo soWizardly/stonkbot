@@ -52,28 +52,30 @@ $client->on('message', function ($data) use ($client, $httpClient, $config, $com
         }
 
 
-        if (strpos($text, ':hypers:') !== false) {
-            $message = $client->getMessageBuilder()
-                ->setText(":hypers:")
-                ->setChannel($channel)
-                ->create();
-            $client->postMessage($message);
-        }
+        if (rand(0, 4) == 0) {
+            if (strpos($text, ':hypers:') !== false) {
+                $message = $client->getMessageBuilder()
+                    ->setText(":hypers:")
+                    ->setChannel($channel)
+                    ->create();
+                $client->postMessage($message);
+            }
 
-        if (strpos($text, 'too careful') !== false) {
-            $message = $client->getMessageBuilder()
-                ->setText("You can never be too careful when it comes to aborto-tron.")
-                ->setChannel($channel)
-                ->create();
-            $client->postMessage($message);
-        }
+            if (strpos($text, 'too careful') !== false) {
+                $message = $client->getMessageBuilder()
+                    ->setText("You can never be too careful when it comes to aborto-tron.")
+                    ->setChannel($channel)
+                    ->create();
+                $client->postMessage($message);
+            }
 
-        if (strpos($text, 'thanks') !== false) {
-            $message = $client->getMessageBuilder()
-                ->setText("You're welcome, bitch.")
-                ->setChannel($channel)
-                ->create();
-            $client->postMessage($message);
+            if (strpos($text, 'thanks') !== false) {
+                $message = $client->getMessageBuilder()
+                    ->setText("You're welcome, bitch.")
+                    ->setChannel($channel)
+                    ->create();
+                $client->postMessage($message);
+            }
         }
 
 
