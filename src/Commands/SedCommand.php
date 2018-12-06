@@ -6,35 +6,32 @@ namespace Commands;
 
 use Slack\ChannelInterface;
 
-class StockCommand extends Command
+class SedCommand extends Command
 {
 
     /**
-     * The name of the command, and/or its aliases
-     * @return string|array
+     * The name of the command, or an array of aliases
+     * Returning null means it has no command, and just listens to the channel.
+     * @return string|array|null
      */
     public function command()
     {
-        return ['stock', 'stonks'];
+        return null;
     }
 
     /**
      * Run the command on the specified channel.
-     * @param $channel
+     * @param ChannelInterface $channel
      * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
     public function run(ChannelInterface $channel, $message)
     {
-        $message = $this->client->getMessageBuilder()
-            ->setText("It's .stonk")
-            ->setChannel($channel)
-            ->create();
-        $this->client->postMessage($message);
+
     }
 
     public function description(): string
     {
-        return 'Get it right, kiddo.';
+        return 'nou';
     }
 }

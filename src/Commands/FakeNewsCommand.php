@@ -33,7 +33,8 @@ class FakeNewsCommand extends Command
         $httpClient = BagOfDooDoo::make(Client::class);
         $config = BagOfDooDoo::make('config');
 
-        $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/top-headlines?country=us&apiKey={$config["news_api"]}");
+        $request = new \GuzzleHttp\Psr7\Request('GET',
+            "https://newsapi.org/v2/top-headlines?country=us&apiKey={$config["news_api"]}");
         $promise = $httpClient->sendAsync($request)->then(function ($response) use ($channel) {
 
             $res = json_decode($response->getBody(), true);
@@ -48,5 +49,10 @@ class FakeNewsCommand extends Command
             $this->client->postMessage($message);
         });
         $promise->wait();
+    }
+
+    public function description(): string
+    {
+        return 'Not you, no, not you. Quiet please. No, sir, quite. You are fake news.';
     }
 }

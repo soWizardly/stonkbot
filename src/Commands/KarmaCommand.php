@@ -95,4 +95,9 @@ class KarmaCommand extends Command
         $entityManager->persist($userKarma);
         $entityManager->flush();
     }
+
+    public function description(): string
+    {
+        return 'Scoreboard for plebs';
+    }
 }

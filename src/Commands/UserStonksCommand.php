@@ -100,4 +100,9 @@ class UserStonksCommand extends Command
             }
         }
     }
+
+    public function description(): string
+    {
+        return 'See the daily growth.';
+    }
 }
