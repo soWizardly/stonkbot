@@ -69,4 +69,9 @@ class StonkNewsCommand extends Command
 
         }
     }
+
+    public function description(): string
+    {
+        return 'Calculated, thoroughly thought out fake news.';
+    }
 }

@@ -40,4 +40,9 @@ class MillennialCapitalizationCommand extends Command
             ->setChannel($channel)
             ->create());
     }
+
+    public function description(): string
+    {
+        return 'Proper capitalization of the current generation.';
+    }
 }

@@ -66,4 +66,9 @@ class WhatIfCommand extends Command
 
         }
     }
+
+    public function description(): string
+    {
+        return 'Would of, could of, should of.';
+    }
 }

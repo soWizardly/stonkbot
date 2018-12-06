@@ -63,4 +63,9 @@ class UrbanDictionaryCommand extends Command
             ->setChannel($channel)
             ->create());
     }
+
+    public function description(): string
+    {
+        return 'It\'s like Websters for hipsters';
+    }
 }

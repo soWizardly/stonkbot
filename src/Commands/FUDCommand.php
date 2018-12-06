@@ -56,4 +56,9 @@ class FUDCommand extends Command
             ->create();
         $this->client->postMessage($message);
     }
+
+    public function description(): string
+    {
+        return ':moon: :lambo: :linkies: :bigmac:';
+    }
 }

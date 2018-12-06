@@ -88,4 +88,9 @@ class StonkCommand extends Command
         }
 
     }
+
+    public function description(): string
+    {
+        return 'Panic selling at it\;s greatest';
+    }
 }

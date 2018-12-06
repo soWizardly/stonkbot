@@ -62,4 +62,13 @@ class AllTimeHighCommand extends Command
 
             }
     }
+
+    /**
+     * Return a description of what the command does.
+     * @return string
+     */
+    public function description(): string
+    {
+        return 'ARE WE THERE YET';
+    }
 }

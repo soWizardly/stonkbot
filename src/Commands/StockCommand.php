@@ -32,4 +32,9 @@ class StockCommand extends Command
             ->create();
         $this->client->postMessage($message);
     }
+
+    public function description(): string
+    {
+        return 'Get it right, kiddo.';
+    }
 }

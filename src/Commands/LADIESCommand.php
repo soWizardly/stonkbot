@@ -38,4 +38,8 @@ class LADIESCommand extends Command
     }
 
 
+    public function description(): string
+    {
+        return 'm\'ladies, *tips fedora*';
+    }
 }

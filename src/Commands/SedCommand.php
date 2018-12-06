@@ -29,4 +29,9 @@ class SedCommand extends Command
     {
 
     }
+
+    public function description(): string
+    {
+        return 'nou';
+    }
 }
