@@ -38,6 +38,8 @@ class SlackConnectionManager implements ConnectionManager
 
     private function registerMessageEvent()
     {
+        // TODO(vulski): Command checking abstraction.... CommandRegistry?
+
         $this->slackClient->on('message', function ($data) {
             $this->slackClient->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($data) {
                 /** @var Channel $channel */
@@ -48,12 +50,12 @@ class SlackConnectionManager implements ConnectionManager
                     if (is_array($command->command())) {
                         foreach ($command->command() as $alias) {
                             if ($action[0] == config('app')['token'] . $alias) {
-                                $command->run($message);
+                                $this->sendMessage($command->run($message));
                             }
                         }
                     } else {
                         if ($action[0] == config('app')['token'] . $command->command()) {
-                            $command->run($message);
+                            $this->sendMessage($command->run($message));
                         }
                     }
                 }
@@ -86,15 +88,16 @@ class SlackConnectionManager implements ConnectionManager
      */
     public function sendMessage(Message $msg): bool
     {
-        $channel = $this->slackClient->getChannelByName($msg->getChannel());
-        $message = $this->slackClient->getMessageBuilder()
-            ->setText($msg->getMessage())
-            ->setChannel($channel);
-        foreach ($message->getAttachments() as $attachment) {
-            $message->addAttachment($attachment);
-        }
+        $this->slackClient->getChannelByName($msg->getChannel())->then(function ($channel) use ($msg){
+            $message = $this->slackClient->getMessageBuilder()
+                ->setText($msg->getMessage())
+                ->setChannel($channel);
+            foreach ($msg->getAttachments() as $attachment) {
+                $message->addAttachment($attachment);
+            }
 
-        return $this->slackClient->postMessage($message->create());
+            return $this->slackClient->postMessage($message->create());
+        });
     }
 
     /**
