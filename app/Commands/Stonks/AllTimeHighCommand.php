@@ -7,6 +7,8 @@ namespace App\Commands\Stonks;
 use App\Commands\Command;
 use App\Communication\Message;
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\Promise;
+use React\Promise\PromiseInterface;
 use Slack\Message\Attachment;
 
 class AllTimeHighCommand extends Command
@@ -30,6 +32,7 @@ class AllTimeHighCommand extends Command
     {
         try {
             $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/QQQ/batch?types=quote");
+            /** @var Promise $promise */
             $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($message) {
                 $res = json_decode($response->getBody(), true);
                 $ath = 186.74;
@@ -39,8 +42,7 @@ class AllTimeHighCommand extends Command
                     $isAth ? ":hypers: YES THE FUCK WE ARE!!!!! :hypers:" : "Nah son, QQQ was at {$ath} the other day", null, $isAth ? "#00ff00" : "#ff0000");
                     return new Message($message->getChannel(), "", [$attachment]);
             });
-            $promise->wait();
-
+            return $promise->wait();
         } catch (\Exception $e) {
             return new Message($message->getChannel(), "WTF: " . $e->getMessage());
         }

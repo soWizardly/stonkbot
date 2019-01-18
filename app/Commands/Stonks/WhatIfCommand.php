@@ -49,7 +49,7 @@ class WhatIfCommand extends Command
                 $message->setAttachments([new Attachment("What if? {$stonk}", $message2, null, $newAmount > $amount ? "#00ff00" : "#ff0000")]);
                 return $message;
             });
-            $promise->wait();
+            return $promise->wait();
 
         } catch (\Exception $e) {
             $message->setMessage("I died: " . $e->getMessage());

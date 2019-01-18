@@ -43,18 +43,20 @@ class SlackConnectionManager implements ConnectionManager
         $this->slackClient->on('message', function ($data) {
             $this->slackClient->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($data) {
                 /** @var Channel $channel */
-                $message = new Message($channel->getName(), $data);
+                $message = new Message($channel->getName(), $data['text']);
                 $action = explode(" ", strtolower($data["text"])) ?? null;
                 foreach (resolve('commands') as $command) {
                     /* @var Command $command */
                     if (is_array($command->command())) {
                         foreach ($command->command() as $alias) {
                             if ($action[0] == config('app')['token'] . $alias) {
+                                echo "RUNNING COMMAND: " . implode(", ", $command->command()) . PHP_EOL;
                                 $this->sendMessage($command->run($message));
                             }
                         }
                     } else {
                         if ($action[0] == config('app')['token'] . $command->command()) {
+                            echo "RUNNING COMMAND: " . $command->command() . PHP_EOL;
                             $this->sendMessage($command->run($message));
                         }
                     }

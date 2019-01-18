@@ -31,16 +31,16 @@ class UrbanDictionaryCommand extends Command
      */
     public function run(Message $message): Message
     {
-        if ($message[0] == '.another') {
+        $msg = explode(' ', $message->getMessage());
+        if ($msg[0] == '.another') {
             $this->i++;
         } else {
             $this->i = 0;
             $api = "http://api.urbandictionary.com/v0/define?term=";
             $client = new Client();
-            array_shift($message);
-            $result = $client->get($api . implode('', $message));
+            array_shift($msg);
+            $result = $client->get($api . implode('', $msg));
             $this->lastResult = json_decode((string)$result->getBody(), true)['list'];
-            var_dump($this->lastResult);
         }
 
 

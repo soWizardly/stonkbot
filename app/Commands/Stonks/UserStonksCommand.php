@@ -78,7 +78,7 @@ class UserStonksCommand extends Command
                     $attachments = [new Attachment("Today's Moves", $message, null, $move > 0 ? "#00ff00" : "#ff0000")];
                     return new Message($message->getChannel(), $finalMsg, $attachments);
                 });
-                $promise->wait();
+                return $promise->wait();
 
             } catch (\Exception $e) {
                 $message->setMessage("WTF BRO");

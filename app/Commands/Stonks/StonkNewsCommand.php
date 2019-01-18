@@ -57,7 +57,7 @@ class StonkNewsCommand extends Command
                 }
                 return new Message($message->getChannel(), "", $attachments);
             });
-            $promise->wait();
+            return $promise->wait();
         } catch (\Exception $e) {
             return new Message($message->getChannel(), "I died: " . $e->getMessage());
         }

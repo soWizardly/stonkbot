@@ -41,7 +41,7 @@ class FakeNewsCommand extends Command
             $attachment = new \App\Communication\Attachment(rtrim($article["title"], ".") . " in Donald Trump's bed.", $description . " " . $article["url"]);
             return (new Message($message->getChannel(), "", [$attachment]));
         });
-        $promise->wait();
+        return $promise->wait();
     }
 
     public function description(): string

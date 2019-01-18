@@ -18,7 +18,7 @@ class DatabaseServiceProvider implements \Pimple\ServiceProviderInterface
     public function register(\Pimple\Container $pimple)
     {
         // Creates an empty SQLite file, if it doesn't exist..
-//        (new \SQLite3(__DIR__ . '/storage/db.sqlite'));
+        (new \SQLite3(__DIR__ . '/../../storage/db.sqlite'));
 
 
         $pimple[\Doctrine\ORM\Configuration::class] = function () {

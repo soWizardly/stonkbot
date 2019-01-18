@@ -65,7 +65,7 @@ class StonkCommand extends Command
                 $attachment = new Attachment("Hot Stonk Action", implode(', ', $message), null, $percentage > 0 ? "#00ff00" : "#ff0000");
                 return new Message($message->getChannel(), '', [$attachment]);
             });
-            $promise->wait();
+            return $promise->wait();
 
         } catch (\Exception $e) {
             return new Message($message->getChannel(), "yOu kIlLeD mE AUGHHGHG OOHHH AHHHH OOF :hypers:: " . $e->getMessage());
