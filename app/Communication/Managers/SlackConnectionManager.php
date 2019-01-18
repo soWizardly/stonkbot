@@ -3,12 +3,14 @@
 namespace App\Communication\Managers;
 
 
+use App\Commands\Command;
 use App\Communication\ConnectionManager;
 use App\Communication\Message;
 use GuzzleHttp\Client;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
+use Slack\Channel;
 use Slack\RealTimeClient;
 
 class SlackConnectionManager implements ConnectionManager
@@ -31,6 +33,32 @@ class SlackConnectionManager implements ConnectionManager
     {
         $this->slackClient = $client;
         $this->loop = $loop;
+        $this->registerMessageEvent();
+    }
+
+    private function registerMessageEvent()
+    {
+        $this->slackClient->on('message', function ($data) {
+            $this->slackClient->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($data) {
+                /** @var Channel $channel */
+                $message = new Message($channel->getName(), $data);
+                $action = explode(" ", strtolower($data["text"])) ?? null;
+                foreach (resolve('commands') as $command) {
+                    /* @var Command $command */
+                    if (is_array($command->command())) {
+                        foreach ($command->command() as $alias) {
+                            if ($action[0] == config('app')['token'] . $alias) {
+                                $command->run($message);
+                            }
+                        }
+                    } else {
+                        if ($action[0] == config('app')['token'] . $command->command()) {
+                            $command->run($message);
+                        }
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -58,9 +86,15 @@ class SlackConnectionManager implements ConnectionManager
      */
     public function sendMessage(Message $msg): bool
     {
-        $this->slackClient->getMessageBuilder()
+        $channel = $this->slackClient->getChannelByName($msg->getChannel());
+        $message = $this->slackClient->getMessageBuilder()
             ->setText($msg->getMessage())
-            ->setChannel($msg->getChannel());
+            ->setChannel($channel);
+        foreach ($message->getAttachments() as $attachment) {
+            $message->addAttachment($attachment);
+        }
+
+        return $this->slackClient->postMessage($message->create());
     }
 
     /**

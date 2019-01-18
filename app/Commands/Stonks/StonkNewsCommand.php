@@ -5,6 +5,7 @@ namespace App\Commands\Stonks;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -24,49 +25,41 @@ class StonkNewsCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         $config = resolve('config');
         try {
             $stonk = $message[1];
             if (empty($stonk)) {
-                throw new \Exception("you need to enter a stonk");
+                return new Message($message->getChannel(), "you need to enter a stonk");
             }
-
             $from = date("Y-m-d", strtotime("yesterday"));
             /**
              * Required attribution to newsapi.org
              */
             $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/everything?q={$stonk}&from={$from}&apiKey={$config["news_api"]}");
-            $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use ($channel) {
+            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($message) {
                 $res = json_decode($response->getBody(), true);
-                $message = $this->client->getMessageBuilder();
+                $attachments = [];
                 $sources = [];
                 foreach ($res["articles"] as $article) {
                     if (in_array($article["source"]["id"], $sources) || count($sources) > 3) {
                         continue;
                     }
                     $sources[] = $article["source"]["id"];
-                    $message = $message->addAttachment(new Attachment(
+                    $attachments[] = new Attachment(
                         $article["title"],
                         $article["description"] . " " . $article["url"]
-                    ));
+                    );
                 }
-                $this->client->postMessage($message->setText('')->setChannel($channel)->create());
+                return new Message($message->getChannel(), "", $attachments);
             });
             $promise->wait();
         } catch (\Exception $e) {
-
-            $message = $this->client->getMessageBuilder()
-                ->setText("I died: " . $e->getMessage())
-                ->setChannel($channel)
-                ->create();
-            $this->client->postMessage($message);
-
+            return new Message($message->getChannel(), "I died: " . $e->getMessage());
         }
     }
 

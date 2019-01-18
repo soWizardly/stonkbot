@@ -4,6 +4,7 @@
 namespace App\Commands;
 
 
+use App\Communication\Message;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
 
@@ -21,24 +22,22 @@ class MillennialCapitalizationCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
-        array_shift($message);
-        $message = str_split(implode(' ', $message));
+        $msg = explode(" ", $message->getMessage());
+        array_shift($msg);
+        $msg = str_split(implode(' ', $msg));
 
-        for ($i = 0; $i < count($message); $i++) {
+        for ($i = 0; $i < count($msg); $i++) {
             if ($i % 2 >= 1) {
-                $message[$i] = strtoupper($message[$i]);
+                $msg[$i] = strtoupper($msg[$i]);
             }
         }
-        $this->client->postMessage($this->client->getMessageBuilder()
-            ->setText(implode($message))
-            ->setChannel($channel)
-            ->create());
+        $message->setMessage(implode($msg));
+        return $message;
     }
 
     public function description(): string

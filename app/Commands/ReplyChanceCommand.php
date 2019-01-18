@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 
+use App\Communication\Message;
 use Slack\ChannelInterface;
 
 class ReplyChanceCommand extends Command
@@ -29,11 +30,10 @@ class ReplyChanceCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         // TODO: Implement run() method.
     }

@@ -5,6 +5,7 @@ namespace App\Commands\APIs;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 
@@ -25,11 +26,10 @@ class UrbanDictionaryCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         if ($message[0] == '.another') {
             $this->i++;
@@ -45,7 +45,7 @@ class UrbanDictionaryCommand extends Command
 
 
         if (empty($this->lastResult)) {
-            $definition = 'Word: retard. Definition: You.';
+            $definition = 'Never heard of it.';
         } else {
             if (isset($this->lastResult[$this->i])) {
                 $definition = $this->lastResult[$this->i]['definition'];
@@ -59,10 +59,7 @@ class UrbanDictionaryCommand extends Command
             $definition .= " ... ";
         }
 
-        $this->client->postMessage($this->client->getMessageBuilder()
-            ->setText($definition)
-            ->setChannel($channel)
-            ->create());
+        return new Message($message->getChannel(), $definition);
     }
 
     public function description(): string

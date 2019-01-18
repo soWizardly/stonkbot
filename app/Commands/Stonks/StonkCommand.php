@@ -5,6 +5,7 @@ namespace App\Commands\Stonks;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
@@ -28,14 +29,12 @@ class StonkCommand extends Command
      * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         try {
             $stonks = $message;
             unset($stonks[0]);
-
             $count = count($stonks);
-
             if ($count > 1) {
                 $stonk = strtoupper(implode(',', $message));
                 $request = new \GuzzleHttp\Psr7\Request('GET',
@@ -48,10 +47,7 @@ class StonkCommand extends Command
                 throw new \Exception("You need to enter a stock");
             }
 
-            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use (
-                $stonk,
-                $channel
-            ) {
+            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($message) {
 
                 $resp = json_decode($response->getBody(), true);
                 $message = [];
@@ -66,26 +62,13 @@ class StonkCommand extends Command
                     $message[] = "{$symbol} \${$now} ({$percentage}%)";
                 }
 
-                $message = $this->client->getMessageBuilder()
-                    ->addAttachment(
-                        new Attachment("Hot Stonk Action", implode(', ', $message), null,
-                            $percentage > 0 ? "#00ff00" : "#ff0000")
-                    )
-                    ->setText('')
-                    ->setChannel($channel)
-                    ->create();
-                $this->client->postMessage($message);
+                $attachment = new Attachment("Hot Stonk Action", implode(', ', $message), null, $percentage > 0 ? "#00ff00" : "#ff0000");
+                return new Message($message->getChannel(), '', [$attachment]);
             });
             $promise->wait();
 
         } catch (\Exception $e) {
-
-            $message = $this->client->getMessageBuilder()
-                ->setText("yOu kIlLeD mE AUGHHGHG OOHHH AHHHH OOF :hypers:: " . $e->getMessage())
-                ->setChannel($channel)
-                ->create();
-            $this->client->postMessage($message);
-
+            return new Message($message->getChannel(), "yOu kIlLeD mE AUGHHGHG OOHHH AHHHH OOF :hypers:: " . $e->getMessage());
         }
 
     }

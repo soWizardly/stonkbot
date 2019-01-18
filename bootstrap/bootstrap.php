@@ -23,8 +23,9 @@ foreach ($container['config']['app']['providers'] as $provider) {
 // Connect to the server.
 $container[\App\Communication\ConnectionManager::class]->connect();
 
-// Load the commands.
+// Register commands.
 $commands = array();
 foreach ($container['config']['commands'] as $command) {
-    $commands[] = new $command($container[\Slack\RealTimeClient::class]);
+    $commands[] = new $command();
 }
+$container['commands'] = $commands;
