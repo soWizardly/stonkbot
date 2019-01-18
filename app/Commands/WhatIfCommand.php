@@ -4,7 +4,7 @@
 namespace App\Commands;
 
 
-use Container;
+use App\Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;

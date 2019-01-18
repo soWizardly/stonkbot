@@ -2,3 +2,4 @@
 /config.php
 config/config.php
 vendor/
+.env

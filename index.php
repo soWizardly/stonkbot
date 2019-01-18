@@ -1,21 +1,22 @@
 <?php
 
-require 'bootstrap.php';
+require 'bootstrap/bootstrap.php';
 
 $commands = array();
-foreach ($config["commands"] as $command) {
-    $commands[] = new $command(Container::make(\Slack\RealTimeClient::class));
+foreach ($container['config']['commands'] as $command) {
+    $commands[] = new $command($container[\Slack\RealTimeClient::class]);
 }
 
+$client = $container[\Slack\RealTimeClient::class];
+$client->on('message', function ($data) use ($container, $commands,$client) {
+    $httpClient = $container[\GuzzleHttp\Client::class];
 
-$client->on('message', function ($data) use ($client, $httpClient, $config, $commands) {
     $client->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use (
         $client,
         $data,
         $httpClient,
         &
         $last,
-        $config,
         $commands
     ) {
         $action = explode(" ", strtolower($data["text"])) ?? null;
@@ -80,4 +81,4 @@ $client->on('message', function ($data) use ($client, $httpClient, $config, $com
 });
 
 
-$loop->run();
+$container[\React\EventLoop\LoopInterface::class]->run();
