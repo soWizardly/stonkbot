@@ -5,6 +5,7 @@ namespace App\Commands\Stonks;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use Slack\ChannelInterface;
 
 class StockCommand extends Command
@@ -21,17 +22,12 @@ class StockCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
-        $message = $this->client->getMessageBuilder()
-            ->setText("It's .stonk")
-            ->setChannel($channel)
-            ->create();
-        $this->client->postMessage($message);
+        return new Message($message->getChannel(), "It's stonk.");
     }
 
     public function description(): string

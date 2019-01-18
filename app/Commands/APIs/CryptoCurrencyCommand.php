@@ -3,8 +3,8 @@
 namespace App\Commands\APIs;
 
 use App\Commands\Command;
+use App\Communication\Message;
 use GuzzleHttp\Client;
-use Slack\ChannelInterface;
 
 class CryptoCurrencyCommand extends Command
 {
@@ -20,23 +20,23 @@ class CryptoCurrencyCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         $client = new Client();
         $response = $client->get('https://api.coinmarketcap.com/v2/ticker/');
         $json = json_decode((string)$response->getBody(), true)['data'];
+        $parsed = explode(" ", $message->getMessage());
         // IM A GOOD PROGRAMMER
-        array_shift($message);
-        if (empty($message)) {
+        array_shift($parsed);
+        if (empty($parsed)) {
             $coins = ['BTC', 'ETH', 'LTC', 'LINK', 'BTCSV', 'XLM',];
         } else {
             $coins = array_map(function ($row) {
                 return strtoupper($row);
-            }, $message);
+            }, $parsed);
         }
         $line = '';
         $i = 0;
@@ -51,11 +51,7 @@ class CryptoCurrencyCommand extends Command
             }
         }
 
-        $message = $this->client->getMessageBuilder()
-            ->setText($line)
-            ->setChannel($channel)
-            ->create();
-        $this->client->postMessage($message);
+        return new Message($message->getChannel(), $line);
     }
 
     public function description(): string

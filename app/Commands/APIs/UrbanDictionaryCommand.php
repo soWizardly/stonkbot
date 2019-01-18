@@ -5,6 +5,7 @@ namespace App\Commands\APIs;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 
@@ -25,27 +26,26 @@ class UrbanDictionaryCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
-        if ($message[0] == '.another') {
+        $msg = explode(' ', $message->getMessage());
+        if ($msg[0] == '.another') {
             $this->i++;
         } else {
             $this->i = 0;
             $api = "http://api.urbandictionary.com/v0/define?term=";
             $client = new Client();
-            array_shift($message);
-            $result = $client->get($api . implode('', $message));
+            array_shift($msg);
+            $result = $client->get($api . implode('', $msg));
             $this->lastResult = json_decode((string)$result->getBody(), true)['list'];
-            var_dump($this->lastResult);
         }
 
 
         if (empty($this->lastResult)) {
-            $definition = 'Word: retard. Definition: You.';
+            $definition = 'Never heard of it.';
         } else {
             if (isset($this->lastResult[$this->i])) {
                 $definition = $this->lastResult[$this->i]['definition'];
@@ -59,10 +59,7 @@ class UrbanDictionaryCommand extends Command
             $definition .= " ... ";
         }
 
-        $this->client->postMessage($this->client->getMessageBuilder()
-            ->setText($definition)
-            ->setChannel($channel)
-            ->create());
+        return new Message($message->getChannel(), $definition);
     }
 
     public function description(): string

@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 // Composer autoloader.
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -23,8 +26,9 @@ foreach ($container['config']['app']['providers'] as $provider) {
 // Connect to the server.
 $container[\App\Communication\ConnectionManager::class]->connect();
 
-// Load the commands.
+// Register commands.
 $commands = array();
 foreach ($container['config']['commands'] as $command) {
-    $commands[] = new $command($container[\Slack\RealTimeClient::class]);
+    $commands[] = new $command();
 }
+$container['commands'] = $commands;

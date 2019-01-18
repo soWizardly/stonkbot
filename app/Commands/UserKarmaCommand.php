@@ -4,9 +4,9 @@
 namespace App\Commands;
 
 
+use App\Communication\Message;
 use App\Models\UserKarma;
 use Doctrine\ORM\EntityManager;
-use Slack\ChannelInterface;
 
 class UserKarmaCommand extends Command
 {
@@ -22,21 +22,19 @@ class UserKarmaCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         /* @var $entityManager EntityManager */
         $entityManager = resolve(EntityManager::class);
-        $cmd = str_replace('.', '', $message[0]);
-
+        $msg = explode(' ', $message->getMessage());
+        $cmd = str_replace('.', '', $msg[0]);
 
         if ($cmd == 'scoreboard') {
-            var_dump('ok');
             $qb = $entityManager->createQueryBuilder();
             $query = $qb->select([
                 'u',
@@ -56,24 +54,19 @@ class UserKarmaCommand extends Command
                     }
                     $i++;
                 }
-                $message = $this->client->getMessageBuilder()
-                    ->setText($scoreboard)
-                    ->setChannel($channel)
-                    ->create();
-                $this->client->postMessage($message);
+                $message->setMessage($scoreboard);
+                return $message;
             } catch (\Exception $e) {
                 var_dump($e->getMessage());
             }
-
-            return;
         }
 
         $userKarma = $entityManager->getRepository('UserKarma')->findBy([
-            'name' => $message[1]
+            'name' => $msg[1]
         ]);
         if (empty($userKarma)) {
             $userKarma = new UserKarma();
-            $userKarma->setName($message[1]);
+            $userKarma->setName($msg[1]);
             $userKarma->setPlus(0);
             $userKarma->setMinus(0);
         } else {
@@ -87,14 +80,10 @@ class UserKarmaCommand extends Command
             $userKarma->setMinus($userKarma->getMinus() + 1);
         }
 
-        $message = $this->client->getMessageBuilder()
-            ->setText($userKarma->getName() . ": +" . $userKarma->getPlus() . "/-" . $userKarma->getMinus() . " " . ($userKarma->getPlus() - $userKarma->getMinus()))
-            ->setChannel($channel)
-            ->create();
-        $this->client->postMessage($message);
-
+        $message->setMessage($userKarma->getName() . ": +" . $userKarma->getPlus() . "/-" . $userKarma->getMinus() . " " . ($userKarma->getPlus() - $userKarma->getMinus()));
         $entityManager->persist($userKarma);
         $entityManager->flush();
+        return $message;
     }
 
     public function description(): string

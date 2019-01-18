@@ -3,6 +3,7 @@
 namespace App\Commands;
 
 
+use App\Communication\Message;
 use Slack\ChannelInterface;
 
 class TipsHatCommand extends Command
@@ -23,18 +24,10 @@ class TipsHatCommand extends Command
      * @param array $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
-        $pm = function ($message) use ($channel) {
-            $message = $this->client->getMessageBuilder()
-                ->setText($message)
-                ->setChannel($channel)
-                ->create();
-            $this->client->postMessage($message);
-        };
-        $pm("( ͡° ͜ʖ ͡° )");
-        $pm("( ͡⊙ ͜ʖ ͡⊙ )");
-        $pm("( ͡◉ ͜ʖ ͡◉ )");
+        $message->setMessage("( ͡° ͜ʖ ͡° )\n( ͡⊙ ͜ʖ ͡⊙ )\n( ͡◉ ͜ʖ ͡◉ )\n");
+        return $message;
     }
 
 

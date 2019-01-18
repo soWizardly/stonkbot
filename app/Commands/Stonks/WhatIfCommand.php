@@ -5,6 +5,7 @@ namespace App\Commands\Stonks;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use App\Facades\Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
@@ -24,19 +25,17 @@ class WhatIfCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
         try {
-
-            $stonk = strtoupper($message[1]);
-            $amount = (int)$message[2];
+            $msg = explode(" ", $message->getMessage());
+            $stonk = strtoupper($msg[1]);
+            $amount = (int)$msg[2];
             $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
-            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($stonk, $channel, $amount) {
-
+            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($stonk, $msg, $amount, $message) {
                 $resp = json_decode($response->getBody(), true);
                 $message2 = [];
 
@@ -46,25 +45,15 @@ class WhatIfCommand extends Command
                     $message2 = "If you invested \${$amount} Jan 1st of this year, you'd have \${$newAmount} now.";
                 }
 
-                $message2 = $this->client->getMessageBuilder()
-                    ->addAttachment(
-                        new Attachment("What if? {$stonk}", $message2, null, $newAmount > $amount ? "#00ff00" : "#ff0000")
-                    )
-                    ->setText('')
-                    ->setChannel($channel)
-                    ->create();
-                $this->client->postMessage($message2);
+                $message->setMessage('');
+                $message->setAttachments([new Attachment("What if? {$stonk}", $message2, null, $newAmount > $amount ? "#00ff00" : "#ff0000")]);
+                return $message;
             });
-            $promise->wait();
+            return $promise->wait();
 
         } catch (\Exception $e) {
-
-            $message = $this->client->getMessageBuilder()
-                ->setText("I died: " . $e->getMessage())
-                ->setChannel($channel)
-                ->create();
-            $this->client->postMessage($message);
-
+            $message->setMessage("I died: " . $e->getMessage());
+            return $message;
         }
     }
 

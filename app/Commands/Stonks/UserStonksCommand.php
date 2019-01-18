@@ -5,6 +5,7 @@ namespace App\Commands\Stonks;
 
 
 use App\Commands\Command;
+use App\Communication\Message;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -14,10 +15,9 @@ class UserStonksCommand extends Command
 
     private $users;
 
-    public function __construct(\Slack\RealTimeClient $client)
+    public function __construct()
     {
         $this->users = config('user_stonks');
-        parent::__construct($client);
     }
 
     /**
@@ -31,22 +31,22 @@ class UserStonksCommand extends Command
 
     /**
      * Run the command on the specified channel.
-     * @param ChannelInterface $channel
-     * @param array $message The text the user said, exploded by space.
+     * @param Message $message The text the user said, exploded by space.
      * @return mixed
      */
-    public function run(ChannelInterface $channel, $message)
+    public function run(Message $message): Message
     {
-        if (in_array(str_replace('.', '', $message[0]), array_keys($this->users))) {
-            $isLong = trim($message[1] ?? '');
+        $msg = explode(" ", $message->getMessage());
+        if (in_array(str_replace('.', '', $msg[0]), array_keys($this->users))) {
+            $isLong = trim($msg[1] ?? '');
 
             try {
-                $stonks = implode(',', $this->users[str_replace('.', '', $message[0])]);
+                $stonks = implode(',', $this->users[str_replace('.', '', $msg[0])]);
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=" . $stonks . "&types=quote");
-                $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $channel) {
+                $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $message) {
 
                     $portfolio = json_decode($response->getBody(), true);
-                    $message = [];
+                    $msg = [];
                     $peRatio = [];
 
                     foreach ($portfolio as $item => $data) {
@@ -65,37 +65,24 @@ class UserStonksCommand extends Command
                             $percentage = 0;
                         }
 
-                        $message[] = strtoupper($item) . " ({$percentage}%)";
+                        $msg[] = strtoupper($item) . " ({$percentage}%)";
                     }
 
                     $move = round((array_sum($total["up"] ?? []) - array_sum($total["down"] ?? [])) / count($portfolio), 2);
                     $peRatio = array_filter($peRatio);
-                    $message =
+                    $finalMsg =
                         "Total Change " . $move .
                         "% \n Average P/E Ratio:  " . round(array_sum($peRatio) / count($peRatio), 2) . "x" .
-                        (!empty($isLong) ? ("\n" . implode(', ', $message)) : "");
+                        (!empty($isLong) ? ("\n" . implode(', ', $msg)) : "");
 
-
-                    $message = $this->client->getMessageBuilder()
-                        ->addAttachment(
-                            new Attachment("Today's Moves", $message, null, $move > 0 ? "#00ff00" : "#ff0000")
-                        )
-                        ->setText('')
-                        ->setChannel($channel)
-                        ->create();
-                    $this->client->postMessage($message);
-
+                    $attachments = [new Attachment("Today's Moves", $message, null, $move > 0 ? "#00ff00" : "#ff0000")];
+                    return new Message($message->getChannel(), $finalMsg, $attachments);
                 });
-                $promise->wait();
+                return $promise->wait();
 
             } catch (\Exception $e) {
-                var_dump($e);
-                $message = $this->client->getMessageBuilder()
-                    ->setText("WTF bro!")
-                    ->setChannel($channel)
-                    ->create();
-                $this->client->postMessage($message);
-
+                $message->setMessage("WTF BRO");
+                return $message;
             }
         }
     }

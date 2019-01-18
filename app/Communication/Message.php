@@ -17,15 +17,23 @@ class Message
     private $message;
 
     /**
+     * @var Attachment[]
+     */
+    private $attachments;
+
+    /**
      * Message constructor.
      * @param string $channel
      * @param string $message
+     * @param Attachment[] $attachments
      */
-    public function __construct(string $channel, string $message)
+    public function __construct(string $channel, string $message, $attachments = [])
     {
         $this->channel = $channel;
         $this->message = $message;
+        $this->attachments = $attachments;
     }
+
 
     /**
      * @return string
@@ -57,5 +65,21 @@ class Message
     public function setChannel(string $channel): void
     {
         $this->channel = $channel;
+    }
+
+    /**
+     * @return Attachment[]
+     */
+    public function getAttachments(): array
+    {
+        return $this->attachments;
+    }
+
+    /**
+     * @param Attachment[] $attachments
+     */
+    public function setAttachments(array $attachments): void
+    {
+        $this->attachments = $attachments;
     }
 }

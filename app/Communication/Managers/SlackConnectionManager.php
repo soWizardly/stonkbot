@@ -3,12 +3,14 @@
 namespace App\Communication\Managers;
 
 
+use App\Commands\Command;
 use App\Communication\ConnectionManager;
 use App\Communication\Message;
 use GuzzleHttp\Client;
 use React\EventLoop\LoopInterface;
 use React\Promise\Promise;
 use React\Promise\PromiseInterface;
+use Slack\Channel;
 use Slack\RealTimeClient;
 
 class SlackConnectionManager implements ConnectionManager
@@ -31,6 +33,36 @@ class SlackConnectionManager implements ConnectionManager
     {
         $this->slackClient = $client;
         $this->loop = $loop;
+        $this->registerMessageEvent();
+    }
+
+    private function registerMessageEvent()
+    {
+        // TODO(vulski): Command checking abstraction.... CommandRegistry?
+
+        $this->slackClient->on('message', function ($data) {
+            $this->slackClient->getChannelGroupOrDMByID($data['channel'])->then(function ($channel) use ($data) {
+                /** @var Channel $channel */
+                $message = new Message($channel->getName(), $data['text']);
+                $action = explode(" ", strtolower($data["text"])) ?? null;
+                foreach (resolve('commands') as $command) {
+                    /* @var Command $command */
+                    if (is_array($command->command())) {
+                        foreach ($command->command() as $alias) {
+                            if ($action[0] == config('app')['token'] . $alias) {
+                                echo "RUNNING COMMAND: " . implode(", ", $command->command()) . PHP_EOL;
+                                $this->sendMessage($command->run($message));
+                            }
+                        }
+                    } else {
+                        if ($action[0] == config('app')['token'] . $command->command()) {
+                            echo "RUNNING COMMAND: " . $command->command() . PHP_EOL;
+                            $this->sendMessage($command->run($message));
+                        }
+                    }
+                }
+            });
+        });
     }
 
     /**
@@ -58,9 +90,16 @@ class SlackConnectionManager implements ConnectionManager
      */
     public function sendMessage(Message $msg): bool
     {
-        $this->slackClient->getMessageBuilder()
-            ->setText($msg->getMessage())
-            ->setChannel($msg->getChannel());
+        $this->slackClient->getChannelByName($msg->getChannel())->then(function ($channel) use ($msg){
+            $message = $this->slackClient->getMessageBuilder()
+                ->setText($msg->getMessage())
+                ->setChannel($channel);
+            foreach ($msg->getAttachments() as $attachment) {
+                $message->addAttachment($attachment);
+            }
+
+            return $this->slackClient->postMessage($message->create());
+        });
     }
 
     /**
