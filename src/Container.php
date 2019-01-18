@@ -1,9 +1,9 @@
 <?php
 
+namespace App;
 
 
-
-class BagOfDooDoo
+class Container
 {
     public static $classes;
 

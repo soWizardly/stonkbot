@@ -1,6 +1,6 @@
 <?php
 
-namespace Commands;
+namespace App\Commands;
 
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;

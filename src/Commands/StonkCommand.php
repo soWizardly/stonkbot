@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
-use BagOfDooDoo;
+use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -47,7 +47,7 @@ class StonkCommand extends Command
                 throw new \Exception("You need to enter a stock");
             }
 
-            $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use (
+            $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use (
                 $stonk,
                 $channel
             ) {

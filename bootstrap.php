@@ -16,9 +16,9 @@ $client = new \Slack\RealTimeClient($loop, new GuzzleHttp\Client([
 $client->setToken($config["slack_token"]);
 $client->connect();
 
-BagOfDooDoo::register('config', $config);
-BagOfDooDoo::register(\GuzzleHttp\Client::class, $httpClient);
-BagOfDooDoo::register(\Slack\RealTimeClient::class, $client);
+Container::register('config', $config);
+Container::register(\GuzzleHttp\Client::class, $httpClient);
+Container::register(\Slack\RealTimeClient::class, $client);
 
 // Creates an empty SQLite file, if it doesn't exist..
 $sqlite = new SQLite3(__DIR__ . '/storage/db.sqlite');
@@ -30,5 +30,5 @@ $conn = array(
 
 $entityManager = \Doctrine\ORM\EntityManager::create($conn, $ormConfig);
 
-BagOfDooDoo::register(\Doctrine\ORM\EntityManager::class, $entityManager);
+Container::register(\Doctrine\ORM\EntityManager::class, $entityManager);
 

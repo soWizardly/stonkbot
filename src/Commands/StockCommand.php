@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
 use Slack\ChannelInterface;

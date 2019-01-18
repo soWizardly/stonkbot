@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
 use Doctrine\ORM\EntityManager;
@@ -30,7 +30,7 @@ class KarmaCommand extends Command
     public function run(ChannelInterface $channel, $message)
     {
         /* @var $entityManager EntityManager */
-        $entityManager = \BagOfDooDoo::make(EntityManager::class);
+        $entityManager = \Container::make(EntityManager::class);
         $cmd = str_replace('.', '', $message[0]);
 
 

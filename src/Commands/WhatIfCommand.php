@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
-use BagOfDooDoo;
+use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -34,7 +34,7 @@ class WhatIfCommand extends Command
             $stonk = strtoupper($message[1]);
             $amount = (int)$message[2];
             $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols={$stonk}&types=quote");
-            $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use ($stonk, $channel, $amount) {
+            $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use ($stonk, $channel, $amount) {
 
                 $resp = json_decode($response->getBody(), true);
                 $message2 = [];

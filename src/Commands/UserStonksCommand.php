@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
-use BagOfDooDoo;
+use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -44,7 +44,7 @@ class UserStonksCommand extends Command
             try {
                 $stonks = implode(',', $this->users[str_replace('.', '', $message[0])]);
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=" . $stonks . "&types=quote");
-                $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $channel) {
+                $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
                     $message = [];

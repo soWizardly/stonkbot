@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
-use BagOfDooDoo;
+use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -30,8 +30,8 @@ class FakeNewsCommand extends Command
      */
     public function run(ChannelInterface $channel, $message)
     {
-        $httpClient = BagOfDooDoo::make(Client::class);
-        $config = BagOfDooDoo::make('config');
+        $httpClient = Container::make(Client::class);
+        $config = Container::make('config');
 
         $request = new \GuzzleHttp\Psr7\Request('GET',
             "https://newsapi.org/v2/top-headlines?country=us&apiKey={$config["news_api"]}");
