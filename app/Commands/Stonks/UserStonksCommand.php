@@ -4,7 +4,7 @@
 namespace App\Commands\Stonks;
 
 
-use Container;
+use App\Commands\Command;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -16,8 +16,7 @@ class UserStonksCommand extends Command
 
     public function __construct(\Slack\RealTimeClient $client)
     {
-        // gonna do this cuz we ghetto af :)
-        $this->users = include __DIR__ . '/../../config/user_stonks.php';
+        $this->users = config('user_stonks');
         parent::__construct($client);
     }
 
@@ -44,7 +43,7 @@ class UserStonksCommand extends Command
             try {
                 $stonks = implode(',', $this->users[str_replace('.', '', $message[0])]);
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/market/batch?symbols=" . $stonks . "&types=quote");
-                $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $channel) {
+                $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($isLong, $channel) {
 
                     $portfolio = json_decode($response->getBody(), true);
                     $message = [];

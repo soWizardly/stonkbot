@@ -4,7 +4,7 @@
 namespace App\Commands\Stonks;
 
 
-use Container;
+use App\Commands\Command;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -30,7 +30,7 @@ class StonkNewsCommand extends Command
      */
     public function run(ChannelInterface $channel, $message)
     {
-        $config = Container::make('config');
+        $config = resolve('config');
         try {
             $stonk = $message[1];
             if (empty($stonk)) {

@@ -4,6 +4,7 @@
 namespace App\Commands\Stonks;
 
 
+use App\Commands\Command;
 use Container;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
@@ -47,7 +48,7 @@ class StonkCommand extends Command
                 throw new \Exception("You need to enter a stock");
             }
 
-            $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use (
+            $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use (
                 $stonk,
                 $channel
             ) {

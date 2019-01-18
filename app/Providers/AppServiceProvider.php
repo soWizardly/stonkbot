@@ -20,22 +20,11 @@ class AppServiceProvider implements \Pimple\ServiceProviderInterface
      */
     public function register(\Pimple\Container $pimple)
     {
-
-        $pimple[\React\EventLoop\LoopInterface::class] = function () {
-            return \React\EventLoop\Factory::create();
-        };
-
         $pimple[Client::class] = function () {
             return new Client([
                 'curl' => [CURLOPT_SSL_VERIFYPEER => false],
                 'verify' => false
             ]);
-        };
-
-        $pimple[\Slack\RealTimeClient::class] = function ($c) {
-            $client = new \Slack\RealTimeClient($c[\React\EventLoop\LoopInterface::class], $c[\GuzzleHttp\Client::class]);
-            $client->setToken($c['config']['services']['slack']['token']);
-            return $client;
         };
     }
 }

@@ -4,6 +4,7 @@
 namespace App\Commands\Stonks;
 
 
+use App\Commands\Command;
 use Slack\ChannelInterface;
 
 class StockCommand extends Command

@@ -26,8 +26,7 @@ class DatabaseServiceProvider implements \Pimple\ServiceProviderInterface
         };
 
         $pimple[\Doctrine\ORM\EntityManager::class] = function ($c) {
-            $conn = require __DIR__ . '/../config/database.php';
-            return \Doctrine\ORM\EntityManager::create($conn, $c[\Doctrine\ORM\Configuration::class]);
+            return \Doctrine\ORM\EntityManager::create(config('database'), $c[\Doctrine\ORM\Configuration::class]);
         };
     }
 }

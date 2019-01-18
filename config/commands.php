@@ -3,12 +3,12 @@
 return [
     App\Commands\UserKarmaCommand::class,
     App\Commands\MillennialCapitalizationCommand::class,
-    App\Commands\Stonk\StockCommand::class,
-    App\Commands\Stonk\StonkCommand::class,
-    App\Commands\Stonk\StonkNewsCommand::class,
-    App\Commands\Stonk\UserStonksCommand::class,
-    App\Commands\Stonk\AllTimeHighCommand::class,
-    App\Commands\Stonk\WhatIfCommand::class,
+    App\Commands\Stonks\StockCommand::class,
+    App\Commands\Stonks\StonkCommand::class,
+    App\Commands\Stonks\StonkNewsCommand::class,
+    App\Commands\Stonks\UserStonksCommand::class,
+    App\Commands\Stonks\AllTimeHighCommand::class,
+    App\Commands\Stonks\WhatIfCommand::class,
     App\Commands\APIs\CryptoCurrencyCommand::class,
     App\Commands\APIs\FakeNewsCommand::class,
     App\Commands\APIs\UrbanDictionaryCommand::class
