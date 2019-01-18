@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Commands;
+namespace App\Commands\APIs;
 
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 
-class FUDCommand extends Command
+class CryptoCurrencyCommand extends Command
 {
 
     /**

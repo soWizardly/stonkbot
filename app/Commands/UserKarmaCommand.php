@@ -7,7 +7,7 @@ namespace App\Commands;
 use Doctrine\ORM\EntityManager;
 use Slack\ChannelInterface;
 
-class KarmaCommand extends Command
+class UserKarmaCommand extends Command
 {
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Commands;
+namespace App\Commands\APIs;
 
 
 use Container;

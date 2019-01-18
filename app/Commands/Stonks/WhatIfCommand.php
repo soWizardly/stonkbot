@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Commands;
+namespace App\Commands\Stonks;
 
 
 use App\Container;
