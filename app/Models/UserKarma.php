@@ -1,5 +1,5 @@
 <?php
-
+namespace App\Models;
 /**
  * @Entity @Table(name="user_karma",uniqueConstraints={@UniqueConstraint(name="name_unique",columns={"name"})})
  **/

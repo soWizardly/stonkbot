@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands\Stonks;
 
 
-use BagOfDooDoo;
+use App\Commands\Command;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -32,7 +32,7 @@ class AllTimeHighCommand extends Command
             try {
 
                 $request = new \GuzzleHttp\Psr7\Request('GET', "https://api.iextrading.com/1.0/stock/QQQ/batch?types=quote");
-                $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use ($channel) {
+                $promise = resolve(Client::class)->sendAsync($request)->then(function ($response) use ($channel) {
 
                     $res = json_decode($response->getBody(), true);
                     $ath = 186.74;

@@ -1,15 +1,15 @@
 <?php
 
 return [
-    Commands\FakeNewsCommand::class,
-    Commands\StockCommand::class,
-    Commands\StonkCommand::class,
-    Commands\StonkNewsCommand::class,
-    Commands\UserStonksCommand::class,
-    Commands\AllTimeHighCommand::class,
-    Commands\WhatIfCommand::class,
-    \Commands\KarmaCommand::class,
-    \Commands\FUDCommand::class,
-    \Commands\MillennialCapitalizationCommand::class,
-    \Commands\UrbanDictionaryCommand::class
+    App\Commands\UserKarmaCommand::class,
+    App\Commands\MillennialCapitalizationCommand::class,
+    App\Commands\Stonks\StockCommand::class,
+    App\Commands\Stonks\StonkCommand::class,
+    App\Commands\Stonks\StonkNewsCommand::class,
+    App\Commands\Stonks\UserStonksCommand::class,
+    App\Commands\Stonks\AllTimeHighCommand::class,
+    App\Commands\Stonks\WhatIfCommand::class,
+    App\Commands\APIs\CryptoCurrencyCommand::class,
+    App\Commands\APIs\FakeNewsCommand::class,
+    App\Commands\APIs\UrbanDictionaryCommand::class
 ];

@@ -1,11 +1,11 @@
 <?php
 
-namespace Commands;
+namespace App\Commands;
 
 
 use Slack\ChannelInterface;
 
-class LADIESCommand extends Command
+class TipsHatCommand extends Command
 {
 
     /**

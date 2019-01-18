@@ -1,13 +1,14 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands;
 
 
+use App\Models\UserKarma;
 use Doctrine\ORM\EntityManager;
 use Slack\ChannelInterface;
 
-class KarmaCommand extends Command
+class UserKarmaCommand extends Command
 {
 
     /**
@@ -30,7 +31,7 @@ class KarmaCommand extends Command
     public function run(ChannelInterface $channel, $message)
     {
         /* @var $entityManager EntityManager */
-        $entityManager = \BagOfDooDoo::make(EntityManager::class);
+        $entityManager = resolve(EntityManager::class);
         $cmd = str_replace('.', '', $message[0]);
 
 
@@ -71,7 +72,7 @@ class KarmaCommand extends Command
             'name' => $message[1]
         ]);
         if (empty($userKarma)) {
-            $userKarma = new \UserKarma();
+            $userKarma = new UserKarma();
             $userKarma->setName($message[1]);
             $userKarma->setPlus(0);
             $userKarma->setMinus(0);

@@ -1,2 +1,12 @@
 # stonkbot
-rename config.example.php -> config.php
+
+```
+$ cp .env.example .env
+```
+
+Set your environment variables.
+
+### TODO
+
+- Different driver support
+- Error Handling

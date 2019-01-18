@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Commands;
+namespace App\Commands\Stonks;
 
 
-use BagOfDooDoo;
+use App\Commands\Command;
 use GuzzleHttp\Client;
 use Slack\ChannelInterface;
 use Slack\Message\Attachment;
@@ -30,7 +30,7 @@ class StonkNewsCommand extends Command
      */
     public function run(ChannelInterface $channel, $message)
     {
-        $config = BagOfDooDoo::make('config');
+        $config = resolve('config');
         try {
             $stonk = $message[1];
             if (empty($stonk)) {
@@ -42,7 +42,7 @@ class StonkNewsCommand extends Command
              * Required attribution to newsapi.org
              */
             $request = new \GuzzleHttp\Psr7\Request('GET', "https://newsapi.org/v2/everything?q={$stonk}&from={$from}&apiKey={$config["news_api"]}");
-            $promise = BagOfDooDoo::make(Client::class)->sendAsync($request)->then(function ($response) use ($channel) {
+            $promise = Container::make(Client::class)->sendAsync($request)->then(function ($response) use ($channel) {
                 $res = json_decode($response->getBody(), true);
                 $message = $this->client->getMessageBuilder();
                 $sources = [];
